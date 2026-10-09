@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-UUID="octotheme@lucas.local"
+UUID="octotheme@lucasldp.com"
 SRC="$(cd "$(dirname "$0")" && pwd)"
 DEST="$HOME/.local/share/gnome-shell/extensions/$UUID"
 

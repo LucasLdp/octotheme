@@ -85,25 +85,44 @@ function dominantAccent(pixbuf) {
 }
 
 function loadUserThemeSettings() {
-    const schemaDir = GLib.build_filenamev([
-        GLib.get_home_dir(),
-        '.local/share/gnome-shell/extensions/user-theme@gnome-shell-extensions.gcampax.github.com/schemas',
-    ]);
+    const schemaId = 'org.gnome.shell.extensions.user-theme';
+    const defaultSource = Gio.SettingsSchemaSource.get_default();
+    let schema = defaultSource?.lookup(schemaId, true);
 
-    try {
-        const source = Gio.SettingsSchemaSource.new_from_directory(
-            schemaDir,
-            Gio.SettingsSchemaSource.get_default(),
-            false,
-        );
-        const schema = source.lookup('org.gnome.shell.extensions.user-theme', true);
-        if (schema?.has_key('name'))
-            return new Gio.Settings({settings_schema: schema});
-    } catch (error) {
-        console.warn(`[OctoTheme] Não foi possível carregar o schema User Themes: ${error.message}`);
+    if (!schema) {
+        const userExtensions = GLib.build_filenamev([
+            GLib.get_home_dir(), '.local', 'share', 'gnome-shell', 'extensions',
+        ]);
+        const schemaDirs = [
+            GLib.build_filenamev([
+                userExtensions,
+                'user-theme@gnome-shell-extensions.gcampax.github.com',
+                'schemas',
+            ]),
+            '/usr/share/gnome-shell/extensions/user-theme@gnome-shell-extensions.gcampax.github.com/schemas',
+            '/usr/local/share/gnome-shell/extensions/user-theme@gnome-shell-extensions.gcampax.github.com/schemas',
+        ];
+
+        for (const schemaDir of schemaDirs) {
+            if (!GLib.file_test(schemaDir, GLib.FileTest.IS_DIR))
+                continue;
+
+            try {
+                schema = Gio.SettingsSchemaSource.new_from_directory(
+                    schemaDir,
+                    defaultSource,
+                    false,
+                ).lookup(schemaId, true);
+            } catch (error) {
+                console.warn(`[OctoTheme] Não foi possível carregar o schema User Themes de ${schemaDir}: ${error.message}`);
+            }
+
+            if (schema)
+                break;
+        }
     }
 
-    return null;
+    return schema?.has_key('name') ? new Gio.Settings({settings_schema: schema}) : null;
 }
 
 export default class OctoTheme extends Extension {

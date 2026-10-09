@@ -72,8 +72,8 @@ After installing:
 2. Enable it and open the preferences:
 
 ```bash
-gnome-extensions enable octotheme@lucas.local
-gnome-extensions prefs  octotheme@lucas.local
+gnome-extensions enable octotheme@lucasldp.com
+gnome-extensions prefs  octotheme@lucasldp.com
 ```
 
 ## Usage
@@ -157,6 +157,7 @@ octotheme/
 ├── schemas/            # GSettings schema
 ├── media/              # mascot
 ├── metadata.json
+├── LICENSE             # GPL-3.0-or-later
 └── install.sh
 ```
 
@@ -183,7 +184,7 @@ journalctl -f -o cat /usr/bin/gnome-shell | grep OctoTheme
 **Read a setting straight from the terminal:**
 
 ```bash
-gsettings --schemadir ~/.local/share/gnome-shell/extensions/octotheme@lucas.local/schemas \
+gsettings --schemadir ~/.local/share/gnome-shell/extensions/octotheme@lucasldp.com/schemas \
   get org.gnome.shell.extensions.octotheme mappings
 ```
 
@@ -218,7 +219,7 @@ It shows the real folder names and helps tune the detection.
 
 ## License
 
-Pick a license before publishing. To submit the extension to extensions.gnome.org it must be GPL-compatible (GPL-2.0-or-later or GPL-3.0-or-later are common choices).
+Distributed under the [GPL-3.0-or-later](LICENSE) license.
 
 ---
 

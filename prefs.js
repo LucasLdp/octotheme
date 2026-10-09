@@ -694,6 +694,7 @@ export default class OctoThemePreferences extends ExtensionPreferences {
 
         let connections = [];
         let pages = [];
+        let rebuildSource = 0;
 
         const connect = (object, signal, callback) => {
             connections.push([object, object.connect(signal, callback)]);
@@ -718,7 +719,10 @@ export default class OctoThemePreferences extends ExtensionPreferences {
                 logoFile,
                 t: createTranslator(settings.get_string('language')),
                 rebuild: () => {
-                    GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+                    if (rebuildSource)
+                        return;
+                    rebuildSource = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+                        rebuildSource = 0;
                         build(1);
                         return GLib.SOURCE_REMOVE;
                     });
@@ -735,6 +739,10 @@ export default class OctoThemePreferences extends ExtensionPreferences {
         build(0);
 
         window.connect('close-request', () => {
+            if (rebuildSource) {
+                GLib.Source.remove(rebuildSource);
+                rebuildSource = 0;
+            }
             disconnectAll();
             return false;
         });
