@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.octotheme" path="/org/gnome/shell/extensions/octotheme/">
+    <key name="enabled" type="b">
+      <default>true</default>
+      <summary>Ativa a troca automática de tema e ícones</summary>
+    </key>
+    <key name="use-wallpaper" type="b">
+      <default>false</default>
+      <summary>Usa a cor dominante do plano de fundo como cor ativa</summary>
+    </key>
+    <key name="manual-color" type="s">
+      <default>'blue'</default>
+      <summary>Cor ativa quando o GNOME não oferece accent color nativo</summary>
+    </key>
+    <key name="theme-mode" type="s">
+      <default>'shared'</default>
+      <summary>Usa configurações compartilhadas ou separadas por aparência</summary>
+    </key>
+    <key name="auto-theme-family" type="s">
+      <default>''</default>
+      <summary>Família de tema GTK e/ou GNOME Shell aplicada automaticamente</summary>
+    </key>
+    <key name="auto-gtk-family" type="s">
+      <default>''</default>
+      <summary>Configuração antiga mantida para compatibilidade</summary>
+    </key>
+    <key name="auto-icon-family" type="s">
+      <default>''</default>
+      <summary>Família de ícones aplicada por cor e aparência</summary>
+    </key>
+    <key name="auto-shell-family" type="s">
+      <default>''</default>
+      <summary>Família de temas GNOME Shell aplicada por aparência</summary>
+    </key>
+    <key name="catalog-revision" type="u">
+      <default>0</default>
+      <summary>Solicitação para reexaminar os diretórios de temas instalados</summary>
+    </key>
+    <key name="mappings" type="s">
+      <default>'{}'</default>
+      <summary>Mapeamentos JSON de cor para temas GTK, ícones e GNOME Shell</summary>
+    </key>
+    <key name="language" type="s">
+      <default>'auto'</default>
+      <summary>Idioma da interface: auto, pt-BR ou en</summary>
+    </key>
+  </schema>
+</schemalist>

@@ -1,0 +1,9 @@
+{
+  "uuid": "octotheme@lucas.local",
+  "name": "OctoTheme",
+  "description": "Personalize as cores de destaque, temas GTK/GNOME Shell e conjuntos de ícones do GNOME.",
+  "shell-version": ["45", "46", "47", "48", "49", "50"],
+  "settings-schema": "org.gnome.shell.extensions.octotheme",
+  "gettext-domain": "octotheme@lucas.local",
+  "version-name": "0.2.0"
+}
