@@ -83,6 +83,7 @@ gnome-extensions prefs  octotheme@lucasldp.com
 3. Under **Manual settings per color**, open a color to choose its exact theme and icons. This takes priority over the automatic family.
 4. Change the color in **Settings → Appearance** (or use **Active color** in the preferences) and watch everything change.
 5. Want to follow the wallpaper? Turn on **Use wallpaper color**.
+6. Want one wallpaper per appearance? Under **Light and dark wallpapers**, pick the images and turn on **Apply wallpapers per appearance**.
 6. Want different setups for light and dark? Switch **Appearance setup** to **Custom**.
 
 ## How family detection works
@@ -124,6 +125,8 @@ Everything lives in GSettings (`org.gnome.shell.extensions.octotheme`):
 | --- | --- |
 | `enabled` | Turns automatic switching on and off |
 | `use-wallpaper` | Uses the wallpaper's dominant color |
+| `apply-wallpapers` | Applies the configured light/dark wallpapers |
+| `wallpaper-light` / `wallpaper-dark` | URIs for the light (white) and dark wallpapers |
 | `manual-color` | Active color when GNOME has no native accent |
 | `theme-mode` | `shared` (one look for everything) or `per-mode` (separate light and dark) |
 | `auto-theme-family` / `auto-icon-family` | Chosen automatic families |

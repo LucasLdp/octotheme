@@ -293,6 +293,120 @@ function buildAppearancePage(context) {
     connect(backgroundSettings, 'changed::picture-uri', updatePreviews);
     connect(backgroundSettings, 'changed::picture-uri-dark', updatePreviews);
 
+    const applyCustomWallpapers = () => {
+        if (!settings.get_boolean('apply-wallpapers'))
+            return;
+        const light = settings.get_string('wallpaper-light');
+        const dark = settings.get_string('wallpaper-dark');
+        try {
+            if (light)
+                backgroundSettings.set_string('picture-uri', light);
+            if (dark && backgroundSettings.settings_schema.has_key('picture-uri-dark'))
+                backgroundSettings.set_string('picture-uri-dark', dark);
+        } catch {
+            // Silencioso: a extensão registra o erro no Shell.
+        }
+        updatePreviews();
+    };
+
+    const basenameOf = uri => {
+        try {
+            const path = Gio.File.new_for_uri(uri).get_path();
+            return path ? GLib.path_get_basename(path) : uri;
+        } catch {
+            return uri;
+        }
+    };
+
+    const wallpaperRows = [];
+    const updateWallpaperRows = () => {
+        for (const entry of wallpaperRows) {
+            const uri = settings.get_string(entry.key);
+            entry.subtitle.set_text(uri ? basenameOf(uri) : t('wallpaper.none'));
+            entry.clearButton.set_sensitive(Boolean(uri));
+        }
+    };
+
+    const chooseWallpaper = (parent, key, subtitle, clearButton) => {
+        const dialog = new Gtk.FileChooserNative({
+            title: t('wallpaper.choose'),
+            action: Gtk.FileChooserAction.OPEN,
+            modal: true,
+            transient_for: parent,
+        });
+        const filter = new Gtk.FileFilter({name: t('wallpaper.images')});
+        for (const pattern of ['*.png', '*.jpg', '*.jpeg', '*.webp', '*.bmp', '*.svg'])
+            filter.add_pattern(pattern);
+        dialog.add_filter(filter);
+        dialog.connect('response', (self, response) => {
+            if (response === Gtk.ResponseType.ACCEPT) {
+                const file = self.get_file();
+                if (file) {
+                    settings.set_string(key, file.get_uri());
+                    subtitle.set_text(basenameOf(file.get_uri()));
+                    clearButton.set_sensitive(true);
+                    applyCustomWallpapers();
+                }
+            }
+        });
+        dialog.show();
+    };
+
+    const customGroup = new Adw.PreferencesGroup({
+        title: t('wallpaper.custom.title'),
+        description: t('wallpaper.custom.description'),
+    });
+    page.add(customGroup);
+
+    const applyWallpapersRow = new Adw.SwitchRow({
+        title: t('wallpaper.apply.title'),
+        subtitle: t('wallpaper.apply.subtitle'),
+    });
+    settings.bind('apply-wallpapers', applyWallpapersRow, 'active', Gio.SettingsBindFlags.DEFAULT);
+    customGroup.add(applyWallpapersRow);
+    connect(settings, 'changed::apply-wallpapers', applyCustomWallpapers);
+
+    const findPrefsParent = widget => {
+        let parent = widget.get_root?.();
+        return parent instanceof Gtk.Window ? parent : null;
+    };
+
+    for (const key of ['wallpaper-light', 'wallpaper-dark']) {
+        const isLight = key === 'wallpaper-light';
+        const row = new Adw.ActionRow({
+            title: isLight ? t('wallpaper.light.title') : t('wallpaper.dark.title'),
+            subtitle: t('wallpaper.none'),
+        });
+        const box = new Gtk.Box({spacing: 6});
+        const chooseButton = new Gtk.Button({label: t('wallpaper.choose'), valign: Gtk.Align.CENTER});
+        const clearButton = new Gtk.Button({label: t('wallpaper.clear'), valign: Gtk.Align.CENTER});
+        box.append(chooseButton);
+        box.append(clearButton);
+        row.add_suffix(box);
+        customGroup.add(row);
+        const setSubtitle = text => row.set_subtitle(text);
+        wallpaperRows.push({key, subtitle: {set_text: setSubtitle}, clearButton});
+        chooseButton.connect('clicked', () => {
+            chooseWallpaper(findPrefsParent(chooseButton), key, {set_text: setSubtitle}, clearButton);
+        });
+        clearButton.connect('clicked', () => {
+            settings.set_string(key, '');
+            setSubtitle(t('wallpaper.none'));
+            clearButton.set_sensitive(false);
+        });
+    }
+
+    const applyNowButton = new Gtk.Button({label: t('wallpaper.applyNow'), valign: Gtk.Align.CENTER});
+    customGroup.add(createSettingRow(
+        t('wallpaper.applyNow.title'),
+        t('wallpaper.applyNow.subtitle'),
+        applyNowButton,
+    ));
+    applyNowButton.connect('clicked', applyCustomWallpapers);
+    updateWallpaperRows();
+    connect(settings, 'changed::wallpaper-light', updateWallpaperRows);
+    connect(settings, 'changed::wallpaper-dark', updateWallpaperRows);
+
     const buildCatalog = inventory => {
         const themeGroups = groupThemeNames(inventory.themeNames);
         const iconGroups = groupThemeNames(inventory.iconNames);

@@ -134,6 +134,13 @@ export default class OctoTheme extends Extension {
         this._backgroundSettings = new Gio.Settings({
             schema_id: 'org.gnome.desktop.background',
         });
+        try {
+            this._screensaverSettings = new Gio.Settings({
+                schema_id: 'org.gnome.desktop.screensaver',
+            });
+        } catch {
+            this._screensaverSettings = null;
+        }
         this._shellSettings = loadUserThemeSettings();
         this._hasNativeAccent =
             this._interfaceSettings.settings_schema.has_key('accent-color');
@@ -149,6 +156,7 @@ export default class OctoTheme extends Extension {
 
         watch(this._interfaceSettings, 'changed::accent-color', () => this._apply());
         watch(this._interfaceSettings, 'changed::color-scheme', () => {
+            this._applyWallpapers();
             this._apply();
             this._syncFromWallpaper();
         });
@@ -159,6 +167,9 @@ export default class OctoTheme extends Extension {
         watch(this._settings, 'changed::auto-icon-family', () => this._apply());
         watch(this._settings, 'changed::catalog-revision', () => this._apply());
         watch(this._settings, 'changed::enabled', () => this._apply());
+        watch(this._settings, 'changed::apply-wallpapers', () => this._applyWallpapers());
+        watch(this._settings, 'changed::wallpaper-light', () => this._applyWallpapers());
+        watch(this._settings, 'changed::wallpaper-dark', () => this._applyWallpapers());
         watch(this._settings, 'changed::use-wallpaper', () => this._syncFromWallpaper());
         watch(this._backgroundSettings, 'changed::picture-uri', () => {
             this._syncFromWallpaper();
@@ -168,6 +179,7 @@ export default class OctoTheme extends Extension {
         });
 
         this._syncFromWallpaper();
+        this._applyWallpapers();
         this._apply();
     }
 
@@ -179,6 +191,7 @@ export default class OctoTheme extends Extension {
         this._settings = null;
         this._interfaceSettings = null;
         this._backgroundSettings = null;
+        this._screensaverSettings = null;
         this._shellSettings = null;
     }
 
@@ -273,6 +286,39 @@ export default class OctoTheme extends Extension {
         if (shellTheme && this._shellSettings &&
             this._shellSettings.get_string('name') !== shellTheme) {
             this._shellSettings.set_string('name', shellTheme);
+        }
+    }
+
+    _applyWallpapers() {
+        if (!this._settings?.get_boolean('enabled'))
+            return;
+        if (!this._settings.get_boolean('apply-wallpapers'))
+            return;
+
+        const light = this._settings.get_string('wallpaper-light');
+        const dark = this._settings.get_string('wallpaper-dark');
+        if (!light && !dark)
+            return;
+
+        try {
+            if (light && this._backgroundSettings.get_string('picture-uri') !== light)
+                this._backgroundSettings.set_string('picture-uri', light);
+            if (dark &&
+                this._backgroundSettings.settings_schema.has_key('picture-uri-dark') &&
+                this._backgroundSettings.get_string('picture-uri-dark') !== dark)
+                this._backgroundSettings.set_string('picture-uri-dark', dark);
+
+            if (this._screensaverSettings) {
+                const isDark =
+                    this._interfaceSettings.get_string('color-scheme') === 'prefer-dark';
+                const current = isDark ? dark : light;
+                if (current &&
+                    this._screensaverSettings.settings_schema.has_key('picture-uri') &&
+                    this._screensaverSettings.get_string('picture-uri') !== current)
+                    this._screensaverSettings.set_string('picture-uri', current);
+            }
+        } catch (error) {
+            console.warn(`[OctoTheme] Não foi possível aplicar o papel de parede: ${error.message}`);
         }
     }
 

@@ -83,6 +83,7 @@ gnome-extensions prefs  octotheme@lucasldp.com
 3. Em **Ajustes manuais por cor**, abra uma cor para escolher o tema e os ícones exatos dela. Isso tem prioridade sobre a família automática.
 4. Troque a cor em **Configurações → Aparência** (ou use a **Cor ativa** das preferências) e veja tudo mudar.
 5. Quer acompanhar o plano de fundo? Ligue **Usar cor do plano de fundo**.
+6. Quer um papel de parede para cada aparência? Em **Papéis de parede claro e escuro**, escolha as imagens e ligue **Aplicar papéis de parede por aparência**.
 6. Quer configurações diferentes para claro e escuro? Mude **Configuração de aparência** para **Personalizado**.
 
 ## Como a detecção de famílias funciona
@@ -124,6 +125,8 @@ Tudo fica em GSettings (`org.gnome.shell.extensions.octotheme`):
 | --- | --- |
 | `enabled` | Liga e desliga a troca automática |
 | `use-wallpaper` | Usa a cor dominante do plano de fundo |
+| `apply-wallpapers` | Aplica os papéis de parede claro/escuro configurados |
+| `wallpaper-light` / `wallpaper-dark` | URIs dos papéis de parede claro (white) e escuro (dark) |
 | `manual-color` | Cor ativa quando o GNOME não tem accent nativo |
 | `theme-mode` | `shared` (um visual para tudo) ou `per-mode` (claro e escuro separados) |
 | `auto-theme-family` / `auto-icon-family` | Famílias automáticas escolhidas |

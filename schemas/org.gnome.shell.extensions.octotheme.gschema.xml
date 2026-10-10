@@ -9,6 +9,18 @@
       <default>false</default>
       <summary>Usa a cor dominante do plano de fundo como cor ativa</summary>
     </key>
+    <key name="apply-wallpapers" type="b">
+      <default>false</default>
+      <summary>Aplica os papéis de parede claro e escuro configurados</summary>
+    </key>
+    <key name="wallpaper-light" type="s">
+      <default>''</default>
+      <summary>URI do papel de parede para a aparência clara</summary>
+    </key>
+    <key name="wallpaper-dark" type="s">
+      <default>''</default>
+      <summary>URI do papel de parede para a aparência escura</summary>
+    </key>
     <key name="manual-color" type="s">
       <default>'blue'</default>
       <summary>Cor ativa quando o GNOME não oferece accent color nativo</summary>
